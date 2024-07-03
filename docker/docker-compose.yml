@@ -1,0 +1,18 @@
+services:
+  mysql:
+    image: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    environment:
+      - MYSQL_USER=mantask
+      - MYSQL_PASSWORD=12345678
+      - MYSQL_DATABASE=mantaskdb
+      - MYSQL_ROOT_PASSWORD=12345678
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:
