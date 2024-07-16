@@ -2,6 +2,7 @@ package com.api.mantask.controller;
 
 import com.api.mantask.controller.dto.LoginRequest;
 import com.api.mantask.controller.dto.LoginResponse;
+import com.api.mantask.entity.Role;
 import com.api.mantask.entity.User;
 import com.api.mantask.repository.UserRepository;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 public class TokenController {
@@ -42,16 +44,17 @@ public class TokenController {
 
         Instant now = Instant.now();
         long expiresIn = 300L;
+        String scopes = user.get().getRoles().stream().map(Role::getName).collect(Collectors.joining(" "));
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("mantask-backend")
                 .subject(user.get().getUserId().toString())
                 .expiresAt(now.plusSeconds(expiresIn))
                 .issuedAt(now)
+                .claim("scope", scopes)
                 .build();
 
         String jwtValue = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-
         return ResponseEntity.ok(new LoginResponse(jwtValue, expiresIn));
     }
 
